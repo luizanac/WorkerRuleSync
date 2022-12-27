@@ -1,0 +1,68 @@
+﻿version: '3.8'
+services:
+  yarp:
+    build:
+      context: .
+      dockerfile: src/WorkerRuleSync.Yarp/Dockerfile
+    ports:
+      - "5282:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      servers-network:
+
+  server:
+    build:
+      context: .
+      dockerfile: src/WorkerRuleSync.Server/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      servers-network:
+  
+  server-a:
+    build:
+      context: .
+      dockerfile: src/WorkerRuleSync.ServerA/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      servers-network:
+        
+  server-b:
+    build:
+      context: .
+      dockerfile: src/WorkerRuleSync.ServerB/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      servers-network:
+        
+  worker-a:
+    depends_on:
+      - server
+    build:
+      context: .
+      dockerfile: src/WorkerRuleSync.WorkerA/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      servers-network:
+  
+  worker-b:
+    depends_on:
+      - server
+    build:
+      context: .
+      dockerfile: src/WorkerRuleSync.WorkerB/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      servers-network:        
+        
+networks:
+  servers-network:
